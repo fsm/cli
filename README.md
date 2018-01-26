@@ -1,6 +1,6 @@
-# CLI Target
+# CLI
 
-CLI Target is a command line target for [fsm](https://github.com/fsm/fsm).
+CLI is a command line target for [fsm](https://github.com/fsm/fsm).
 
 # License
 
