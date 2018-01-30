@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"reflect"
@@ -20,39 +21,56 @@ func (e *emitter) Emit(i interface{}) error {
 	switch v := i.(type) {
 
 	case string:
+		e.Emit(emitable.Typing{Enabled: true})
 		fmt.Println(v)
 		e.Emit(emitable.Sleep{LengthMillis: sleepTime})
 		return nil
 
 	case emitable.Audio:
-		fmt.Println("Audio:", v.URL)
-		e.Emit(emitable.Sleep{LengthMillis: sleepTime})
+		e.Emit("Audio: " + v.URL)
 		return nil
 
 	case emitable.File:
-		fmt.Println("File:", v.URL)
-		e.Emit(emitable.Sleep{LengthMillis: sleepTime})
+		e.Emit("File: " + v.URL)
 		return nil
 
 	case emitable.Image:
-		fmt.Println("Image:", v.URL)
-		e.Emit(emitable.Sleep{LengthMillis: sleepTime})
+		e.Emit("Image: " + v.URL)
 		return nil
 
 	case emitable.Video:
-		fmt.Println("Video:", v.URL)
-		e.Emit(emitable.Sleep{LengthMillis: sleepTime})
+		e.Emit("Video: " + v.URL)
 		return nil
 
 	case emitable.QuickReply:
-		fmt.Print("Type one of: [ ")
+		// Message
+		e.Emit(v.Message)
+
+		// Options
+		optionsBuffer := new(bytes.Buffer)
 		for i, reply := range v.Replies {
-			fmt.Print("'" + reply + "'")
-			if i+1 < len(v.Replies) {
-				fmt.Print(", ")
+			optionsBuffer.WriteString("`")
+			optionsBuffer.WriteString(reply)
+			optionsBuffer.WriteString("`")
+			if i+2 < len(v.Replies) && len(v.Replies) > 2 {
+				optionsBuffer.WriteString(", ")
+			} else if i+1 < len(v.Replies) {
+				if len(v.Replies) > 2 {
+					optionsBuffer.WriteString(", or ")
+				} else {
+					optionsBuffer.WriteString(" or ")
+				}
 			}
 		}
-		fmt.Println(" ]")
+
+		// Determine format
+		format := "You can %v"
+		if v.RepliesFormat != "" {
+			format = v.RepliesFormat
+		}
+
+		// Output
+		e.Emit(fmt.Sprintf(format, optionsBuffer.String()))
 		return nil
 
 	case emitable.Sleep:
@@ -61,7 +79,7 @@ func (e *emitter) Emit(i interface{}) error {
 
 	case emitable.Typing:
 		if v.Enabled {
-			fmt.Println("...")
+			fmt.Printf("... ")
 		}
 		e.Emit(emitable.Sleep{LengthMillis: sleepTime})
 		return nil
