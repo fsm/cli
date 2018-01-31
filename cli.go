@@ -7,57 +7,22 @@ import (
 	"os"
 
 	"github.com/fsm/fsm"
+	targetutil "github.com/fsm/target-util"
 )
 
 // Start begins the CLI target for a fsm.StateMachine
 func Start(stateMachine fsm.StateMachine, store fsm.Store) {
-	// Create Emitter
-	emitter := &emitter{}
-
-	// Build stateMap
-	stateMap := make(map[string]fsm.BuildState, 0)
-	for _, buildState := range stateMachine {
-		stateMap[buildState(nil, nil).Slug] = buildState
-	}
-
-	// Get Traverser
 	uuid := uuid()
-	newTraverser := false
-	traverser, err := store.FetchTraverser(uuid)
-	if err != nil {
-		traverser, _ = store.CreateTraverser(uuid)
-		traverser.SetCurrentState("start")
-		newTraverser = true
-	}
-
-	// Get Start State
-	currentState := stateMap[traverser.CurrentState()](emitter, traverser)
-	if newTraverser {
-		currentState.EntryAction()
-	}
-
-	// Prep Reader
+	stateMap := targetutil.GetStateMap(stateMachine)
 	reader := bufio.NewReader(os.Stdin)
-	for currentState != nil {
-		// Read Input from User
+
+	for {
 		fmt.Print("-> ")
 		text, _ := reader.ReadString('\n')
 		text = text[:len(text)-1]
 
-		// Pass Input to State
-		currentState = stateMap[traverser.CurrentState()](emitter, traverser)
-
-		// New State
-		newState := currentState.Transition(text)
-		if newState != nil {
-			// If there's a new state
-			newState.EntryAction()
-			currentState = newState
-			traverser.SetCurrentState(newState.Slug)
-		} else {
-			// There was no new state, reenter current
-			currentState.ReentryAction()
-		}
+		// Step
+		targetutil.Step(uuid, text, store, stateMap, func(uuid string) fsm.Emitter { return &emitter{} })
 	}
 }
 
