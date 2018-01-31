@@ -15,6 +15,7 @@ func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 	uuid := uuid()
 	stateMap := targetutil.GetStateMap(stateMachine)
 	reader := bufio.NewReader(os.Stdin)
+	emitter := &emitter{}
 
 	for {
 		fmt.Print("-> ")
@@ -22,7 +23,7 @@ func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 		text = text[:len(text)-1]
 
 		// Step
-		targetutil.Step(uuid, text, store, stateMap, func(uuid string) fsm.Emitter { return &emitter{} })
+		targetutil.Step(uuid, text, store, emitter, stateMap)
 	}
 }
 
