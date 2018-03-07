@@ -10,6 +10,8 @@ import (
 	targetutil "github.com/fsm/target-util"
 )
 
+const platform = "cli"
+
 // Start begins the CLI target for a fsm.StateMachine
 func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 	uuid := uuid()
@@ -23,7 +25,7 @@ func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 		text = text[:len(text)-1]
 
 		// Step
-		targetutil.Step(uuid, text, store, emitter, stateMap)
+		targetutil.Step(platform, uuid, text, store, emitter, stateMap)
 	}
 }
 
