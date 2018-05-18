@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/fsm/fsm"
-	targetutil "github.com/fsm/target-util"
 )
 
 const platform = "cli"
@@ -15,7 +14,7 @@ const platform = "cli"
 // Start begins the CLI target for a fsm.StateMachine
 func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 	uuid := uuid()
-	stateMap := targetutil.GetStateMap(stateMachine)
+	stateMap := fsm.GetStateMap(stateMachine)
 	reader := bufio.NewReader(os.Stdin)
 	emitter := &emitter{}
 
@@ -25,8 +24,19 @@ func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 		text = text[:len(text)-1]
 
 		// Step
-		targetutil.Step(platform, uuid, text, store, emitter, stateMap)
+		fsm.Step(platform, uuid, text, inputToIntentTransformer, store, emitter, stateMap)
 	}
+}
+
+func inputToIntentTransformer(input interface{}, validIntents []*fsm.Intent) (*fsm.Intent, map[string]string) {
+	inputString := fsm.CleanInput(input.(string))
+	for _, intent := range validIntents {
+		matches, params := intent.Parse(inputString)
+		if matches {
+			return intent, params
+		}
+	}
+	return nil, nil
 }
 
 // uuid generates a UUID that isn't particularly compliant
