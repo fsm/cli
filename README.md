@@ -2,7 +2,7 @@
 
 # CLI
 
-CLI is a command line target for [fsm](https://github.com/fsm/fsm).
+CLI is a command line target for [FSM](https://github.com/fsm/fsm).
 
 This is an ideal target for conversational interface development.
 
