@@ -24,7 +24,7 @@ func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 		text = text[:len(text)-1]
 
 		// Step
-		fsm.Step(platform, uuid, text, fsm.TextInputToIntentTransformer, store, emitter, stateMap)
+		fsm.Step(platform, uuid, text, fsm.TextInputTransformer, store, emitter, stateMap)
 	}
 }
 
