@@ -24,19 +24,8 @@ func Start(stateMachine fsm.StateMachine, store fsm.Store) {
 		text = text[:len(text)-1]
 
 		// Step
-		fsm.Step(platform, uuid, text, inputToIntentTransformer, store, emitter, stateMap)
+		fsm.Step(platform, uuid, text, fsm.TextInputToIntentTransformer, store, emitter, stateMap)
 	}
-}
-
-func inputToIntentTransformer(input interface{}, validIntents []*fsm.Intent) (*fsm.Intent, map[string]string) {
-	inputString := fsm.CleanInput(input.(string))
-	for _, intent := range validIntents {
-		matches, params := intent.Parse(inputString)
-		if matches {
-			return intent, params
-		}
-	}
-	return nil, nil
 }
 
 // uuid generates a UUID that isn't particularly compliant
