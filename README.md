@@ -2,6 +2,11 @@
 
 # CLI
 
+[![Version](https://img.shields.io/github/tag/fsm/cli.svg)](https://github.com/fsm/cli/releases)
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/fsm/cli/blob/master/LICENSE.md) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/fsm/cli)](https://goreportcard.com/report/github.com/fsm/cli) 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/fsm/Lobby)
+
 CLI is a command line target for [FSM](https://github.com/fsm/fsm).
 
 This is an ideal target for conversational interface development.
@@ -28,7 +33,3 @@ func getStore() fsm.Store {
 	// ...
 }
 ```
-
-## License
-
-[MIT](LICENSE.md)
